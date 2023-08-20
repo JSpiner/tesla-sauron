@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  wakeup_cron:
+    image: python
+    working_dir: /usr/src
+    restart: always
+    command: sh -c "pip3 install -r requirements.txt && python3 -u main.py"
+    environment:
+      - TZ=Asia/Seoul
+    volumes:
+      - ./src:/usr/src
