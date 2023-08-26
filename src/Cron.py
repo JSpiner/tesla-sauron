@@ -10,25 +10,31 @@ class Cron:
         self.vehicleId = None
         self.teslaApi = TeslaApi()
 
-    def run(self):
-        print("on cron : " + str(datetime.now()))
+    def run(self, duration=60*40):
+        startedAt = datetime.now()
+        print("on cron : " + str(startedAt))
 
-        for i in range(0, 30):
-            try:
-                result = self.teslaApi.apiPost(
-                    "https://owner-api.teslamotors.com/api/1/vehicles/" + str(self.__getVehicleId()) + "/wake_up",
-                ).json()
-                print("try : " + str(i))
-                print(result)
+        while True:
+            if (datetime.now() - startedAt).total_seconds() > duration:
+                break
+            for i in range(0, 30):
+                try:
+                    result = self.teslaApi.apiPost(
+                        "https://owner-api.teslamotors.com/api/1/vehicles/" +
+                        str(self.__getVehicleId()) + "/wake_up",
+                    ).json()
+                    print("try : " + str(i))
+                    print(result)
 
-                if result['response']['state'] == "online":
-                    print("car online")
-                    return
-                time.sleep(1)
-            except:
-                traceback.print_exc()
+                    if result['response']['state'] == "online":
+                        print("car online")
+                        break
+                    time.sleep(1)
+                except:
+                    traceback.print_exc()
+            time.sleep(60)
 
-        print("wake up failed")
+        print("job done : " + str(datetime.now()))
 
     def __getVehicleId(self):
         if self.vehicleId is None:
